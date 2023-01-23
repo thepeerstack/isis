@@ -20,7 +20,7 @@ func (otp otp) Empty() bool {
 	return false
 }
 
-func (otp otp) Exipired() bool {
+func (otp otp) Expired() bool {
 	if time.Now().Sub(otp.CreatedAt).Minutes() > float64(otp.Validity) {
 		return true
 	}

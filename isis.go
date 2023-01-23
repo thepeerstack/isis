@@ -2,9 +2,10 @@ package isis
 
 import (
 	"fmt"
-	"gorm.io/gorm"
 	"math/rand"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 func Generate(conn *gorm.DB, identifier string, digits int, validity int) (token string, err error) {
@@ -37,19 +38,11 @@ func Validate(conn *gorm.DB, identifier string, token string) (validated bool, e
 
 	conn.First(&foundOtp)
 
-	if foundOtp.Exipired() {
-		foundOtp.Valid = false
-		foundOtp.UpdatedAt = time.Now()
-		conn.Save(&foundOtp)
-
-		return false, nil
-	}
-
 	foundOtp.Valid = false
 	foundOtp.UpdatedAt = time.Now()
 	conn.Save(&foundOtp)
 
-	return true, nil
+	return foundOtp.Expired(), nil
 }
 
 func generatePin(digits int) string {
