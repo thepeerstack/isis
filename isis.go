@@ -42,7 +42,7 @@ func Validate(conn *gorm.DB, identifier string, token string) (validated bool, e
 	foundOtp.UpdatedAt = time.Now()
 	conn.Save(&foundOtp)
 
-	return foundOtp.Expired(), nil
+	return foundOtp.IsActive(), nil
 }
 
 func generatePin(digits int) string {
