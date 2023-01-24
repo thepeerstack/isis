@@ -7,6 +7,33 @@ import (
 	"time"
 )
 
+func SetToken(conn *gorm.DB, identifier string, token string, validity int) (err error) {
+	var exitingOtpCount int64
+
+	var exitingOtp otp
+
+	_ = conn.Where("identifier = ?", identifier).First(&exitingOtp).Count(&exitingOtpCount)
+
+	if exitingOtpCount > 0 {
+		err = conn.Delete(&exitingOtp).Error
+
+		if err != nil {
+			return
+		}
+	}
+
+	err = conn.Create(&otp{
+		Identifier: identifier,
+		Token:      token,
+		Validity:   validity,
+		Valid:      true,
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
+	}).Error
+
+	return
+}
+
 func Generate(conn *gorm.DB, identifier string, digits int, validity int) (token string, err error) {
 	var exitingOtpCount int64
 
