@@ -12,11 +12,7 @@ func Generate(conn *gorm.DB, identifier string, digits int, validity int) (token
 
 	var exitingOtp otp
 
-	err = conn.Where("identifier = ?", identifier).First(&exitingOtp).Count(&exitingOtpCount).Error
-
-	if err != nil {
-		return
-	}
+	_ = conn.Where("identifier = ?", identifier).First(&exitingOtp).Count(&exitingOtpCount)
 
 	if exitingOtpCount > 0 {
 		err = conn.Delete(&exitingOtp).Error
