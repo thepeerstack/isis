@@ -8,6 +8,24 @@ import (
 )
 
 func Generate(conn *gorm.DB, identifier string, digits int, validity int) (token string, err error) {
+	var exitingOtpCount int64
+
+	var exitingOtp otp
+
+	err = conn.Where("identifier = ?", identifier).First(&exitingOtp).Count(&exitingOtpCount).Error
+
+	if err != nil {
+		return
+	}
+
+	if exitingOtpCount > 0 {
+		err = conn.Delete(&exitingOtp).Error
+
+		if err != nil {
+			return
+		}
+	}
+
 	token = generatePin(digits)
 
 	err = conn.Create(&otp{
